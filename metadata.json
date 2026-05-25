@@ -1,0 +1,6 @@
+{
+  "name": "Wolfy Werewolf",
+  "description": "A survival social deduction game with AI bots fueled by Gemini and real-time multiplayer via Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

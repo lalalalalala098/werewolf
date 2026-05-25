@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Registered user credentials and profile.",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "username": { "type": "string" },
+        "email": { "type": "string" },
+        "password": { "type": "string" }
+      },
+      "required": ["user_id", "username", "email", "password"]
+    },
+    "Room": {
+      "title": "Room",
+      "description": "A game room instance.",
+      "type": "object",
+      "properties": {
+        "room_id": { "type": "string" },
+        "game_status": { "type": "string" },
+        "selected_kill": { "type": "string" },
+        "protected_player": { "type": "string" },
+        "day_number": { "type": "number" },
+        "winner": { "type": "string" },
+        "host_id": { "type": "string" },
+        "game_mode": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["room_id", "game_status", "day_number", "host_id", "game_mode", "createdAt", "updatedAt"]
+    },
+    "Player": {
+      "title": "Player",
+      "description": "A player in a room, including real players and AI bots.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "name": { "type": "string" },
+        "avatar": { "type": "string" },
+        "role": { "type": "string" },
+        "is_alive": { "type": "boolean" },
+        "has_acted": { "type": "boolean" },
+        "is_host": { "type": "boolean" },
+        "vote": { "type": "string" },
+        "is_bot": { "type": "boolean" }
+      },
+      "required": ["id", "user_id", "name", "avatar", "role", "is_alive", "has_acted", "is_host", "vote", "is_bot"]
+    },
+    "Log": {
+      "title": "Log",
+      "description": "Game logs or chat messages in the room.",
+      "type": "object",
+      "properties": {
+        "sender": { "type": "string" },
+        "text": { "type": "string" },
+        "type": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sender", "text", "type", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Registered user credentials."
+    },
+    "/rooms/{roomId}": {
+      "schema": "Room",
+      "description": "The main room document."
+    },
+    "/rooms/{roomId}/players/{playerId}": {
+      "schema": "Player",
+      "description": "Players in the room."
+    },
+    "/rooms/{roomId}/logs/{logId}": {
+      "schema": "Log",
+      "description": "Messages, narrative events, and chat lines."
+    }
+  }
+}
