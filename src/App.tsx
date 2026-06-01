@@ -116,6 +116,8 @@ export default function App() {
   const [seerTargetName, setSeerTargetName] = useState<string | null>(null);
 
   const chatScrollRef = useRef<HTMLDivElement>(null);
+  const gameMusicRef = useRef<HTMLAudioElement>(null);
+  const gameMusicActive = phase === "ROOM" && Boolean(roomState) && roomState?.game_status !== "waiting";
 
   // 1. Session Persistence check on Mount
   useEffect(() => {
@@ -218,6 +220,37 @@ export default function App() {
       setSeerTargetName(null);
     }
   }, [roomState?.game_status]);
+
+  // Keep the theme music tied to the active match, while allowing the browser
+  // to block autoplay until the user taps the volume control.
+  useEffect(() => {
+    const audio = gameMusicRef.current;
+    if (!audio) return;
+
+    audio.volume = 0.32;
+    audio.muted = muted;
+
+    if (gameMusicActive && !muted) {
+      void audio.play().catch(() => setMuted(true));
+    } else {
+      audio.pause();
+      if (!gameMusicActive) {
+        audio.currentTime = 0;
+      }
+    }
+  }, [gameMusicActive, muted]);
+
+  const handleToggleMusic = () => {
+    const nextMuted = !muted;
+    setMuted(nextMuted);
+
+    const audio = gameMusicRef.current;
+    if (!audio || nextMuted || !gameMusicActive) return;
+
+    audio.muted = false;
+    audio.volume = 0.32;
+    void audio.play().catch(() => undefined);
+  };
 
   // Authenticators
   const handleRegister = async (e: React.FormEvent) => {
@@ -811,6 +844,8 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen text-slate-100 overflow-x-hidden font-sans">
+      <audio ref={gameMusicRef} src="/audio/game-theme.mpeg" loop preload="auto" />
+
       {/* Custom Keyframes for Cloudy Night Sky & Sun */}
       <style>{`
         @keyframes drift {
@@ -906,6 +941,19 @@ export default function App() {
               <User size={12} className="text-violet-400" />
               <span className="font-semibold text-slate-300">{currentUser.username}</span>
             </div>
+
+            <button
+              type="button"
+              onClick={handleToggleMusic}
+              title={muted ? "Nyalakan Musik" : "Matikan Musik"}
+              className={`p-2 border rounded-xl transition-all flex items-center justify-center shadow-sm ${
+                muted
+                  ? "bg-slate-900/40 hover:bg-slate-800/60 border-slate-700/40 text-slate-400 hover:text-slate-200"
+                  : "bg-violet-950/35 hover:bg-violet-900/45 border-violet-700/35 text-violet-300 hover:text-violet-200"
+              }`}
+            >
+              {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            </button>
             
             <button 
               onClick={handleLogout} 
